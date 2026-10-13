@@ -56,6 +56,8 @@ Developer: Chris Themba Bikitsha
 <div class="form-container">
 <h2>Schedule a Free Consultation</h2> 
 <form action="https://formsubmit.co/222349506@edu.vut.ac.za" method="POST"> 
+<!--THANK YOU PAGE-->
+<input type="hidden" name="_next" value="Thank_You.html">
 <!-- FULL NAME --> 
 <label for="firstname">First Name</label>  
 <input type="text" id="firstname" name="First Name" placeholder="Enter your first name" minlength="2" maxlength="50" pattern="[A-Za-zÀ-ÿ' -]+" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ' -]/g, '')" title="Please enter letters only." required >
@@ -70,8 +72,6 @@ Developer: Chris Themba Bikitsha
 <input type="email" id="email" name="email" placeholder="Enter your email address">
 <!--CAPTCHA-->
 <input type="hidden" name="_captcha" value="true">
-<!--THANK YOU PAGE-->
-<input type="hidden" name="_next" value="Thank_You.html">
 <!--SUBMIT BUTTON-->
 <button type="submit">Submit</button>
 </form>
