@@ -1,0 +1,728 @@
+* {
+box-sizing: border-box;
+}
+
+body{
+	/* Eliminate default browser margins */
+margin: 0;
+padding: 0;
+position: relative;
+/* Ensure the body spans the full viewport height */
+min-height: 100vh;
+font-family: "Source Sans Pro",Arial, sans-serif; 
+color: white;
+background-color: #36454F;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}	
+
+.hero {
+/* Background Image */
+position: relative;
+align-items: center;
+justify-content: center;
+background-image: url('background.png');
+background-size: cover;
+background-position: center ; 
+background-repeat: no-repeat; 
+background-attachment: fixed;
+padding-top: 20px;
+opacity: 0.8;
+}
+
+
+h1 {
+margin-top: 0;
+padding-top: 0;
+text-align: center;
+font-family: 'Indie Flower', cursive;
+}
+
+h2 {
+margin-top: 0;
+padding-top: 0;
+text-align: center;
+font-family: Arial, sans-serif;
+
+}
+
+h3 {
+padding-top: 0;
+padding-left: 10%;
+color: white;
+background-color: transparent;
+font-size: 12px;
+text-align: center;
+}
+
+.index-paragraph {
+box-sizing: border-box;
+padding: 10px;
+border-radius: 10px;
+max-width: 60%;
+justify-self: center;
+text-align: center;
+}
+
+.logospace {
+max-width: 100%;
+align-items: center;
+height: 290px;
+display: flex;
+flex-direction: column;	
+position: relative;
+}
+.imglogo {
+width: 360px;
+max-width: 100%;
+height: 290px;
+object-fit: contain;
+display: block;
+
+}
+
+.logo-text {
+display: block;
+max-width: 600px;
+width: 100%;
+margin: 0;
+padding: 0;
+font-size: 12px;
+text-align: center;
+white-space: normal;
+line-height: 1;
+color: #EFBF04;
+background-color: transparent;
+}
+
+.services {
+display: flex;
+flex-direction: column;
+justify-self: center;
+box-sizing: border-box;
+width: 70%;
+max-height: 100%;
+height: 700px;
+background-color: transparent;
+
+}
+.services ul{
+	list-style: circle;
+	padding-left: 10%;
+}
+
+
+/* Style the navigation menu */
+.topnav {
+  overflow: visible;
+  position: relative;
+  height: 48px;
+  justify-content: center;
+  background-color: #36454F;
+}
+
+/* Hide the links inside the navigation menu (except for logo/home) */
+.topnav #myLinks {
+ 
+  display: none;
+  width: 120px;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  z-index: 1;
+  justify-self: right;
+  border-radius: 8px;
+  box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.06),
+        0 12px 24px rgba(0, 0, 0, 0.08),
+        0 24px 48px rgba(0, 0, 0, 0.10);
+		overflow: hidden;
+   background-color: transparent;
+}
+
+.topnav #myLinks a {
+display: block;
+text-align: right;
+width: 100%;
+box-sizing: border-box;
+font-size: 12px;
+}
+
+
+
+/* Style navigation menu links */
+.topnav a {
+  color: white;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Style the hamburger menu */
+.topnav a.icon {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+}
+
+/* Add a grey background color on mouse-over */
+.topnav a:focus-visible {
+  background-color:  #EFBF04;
+  color: #EFBF04;
+}
+
+.topnav a:hover {
+color: #EFBF04;
+text-decoration: underline !important;
+text-decoration-color: #EFBF04 !important;
+text-underline-offset: 3px;
+}
+
+/* Style the active link (or home/logo) */
+.active {
+text-decoration: underline !important;
+text-decoration-color: #EFBF04 !important;
+color: #EFBF04 !important;
+padding: 0;
+margin: 0;
+display: inline-block;
+font-weight: bold;
+font-size: 14px !important;
+text-underline-offset: 4px;
+}
+
+/* Nav Logo */
+.logo {
+display: flex;
+align-items: center;
+height: 20px;
+}
+
+.logo img {
+padding: auto;
+height: 35px;
+width: auto;
+object-fit: contain;
+display: block;
+}
+
+.getintouch {
+position: fixed;
+bottom: 90px;
+left: 35px;
+z-index: 1000;
+	
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+width: 140px;
+height: 30px;
+ 
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+
+
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+.getintouch:hover {
+background-color: transparent;
+
+}
+
+.getintouch1 {
+position: relative;
+bottom: 10px;
+left: 35px;
+z-index: 1000;
+	
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+width: 140px;
+height: 30px;
+ 
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+justify-self: center;
+
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+.getintouch1:hover {
+background-color: transparent;
+}
+
+.getintouch2 {
+position: relative;
+bottom: 5px;
+left: 35px;
+margin-bottom: 10px;
+z-index: 1000;
+display: flex;
+justify-content: right;
+align-items: center;
+box-sizing: border-box;
+width: 140px;
+height: 30px;
+ 
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+justify-self: center;
+
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+.getintouch2:hover {
+background-color: transparent;
+
+}
+
+.explore {
+position: fixed;
+bottom: 140px;
+left: 35px;
+z-index: 1000;
+	
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+width: 140px;
+height: 30px;
+ 
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+
+
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+
+.explore:hover {
+background-color: transparent;
+}
+
+.getpackage {
+bottom: 25px;
+margin-bottom: 30px;
+display: flex;
+justify-self: center;
+align-items: center;
+padding-left: 3%;
+box-sizing: border-box;
+width: 270px;
+height: 30px;
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+
+.getpackage:hover {
+background-color: transparent;
+}
+
+@media screen and (min-width: 768px) {
+  
+  /* 1. HIDE THE HAMBURGER ICON BUTTON ON DESKTOP */
+  .topnav a.icon {
+    display: none;
+  }
+
+
+  /* Instead of turning the whole nav block into a flexbox, we position the links container absolute-flat */
+  .topnav #myLinks {
+    display: block;       /* Forces visibility over JS state */
+    position: absolute;   /* Floats it inline on the header bar */
+    top: 0;               /* Aligns it perfectly with the top edge */
+    right: 20px;          /* Pushes it over to the right screen margin */
+    left: auto;           /* Cancels mobile width extensions */
+    width: auto;          /* Shrinks the box to perfectly fit the text links */
+    box-shadow: none;     /* Removes the mobile dropdown shadow */
+    height: 48px;        /* Matches your exact topnav height */
+  }
+
+  /* 3. FORMAT THE LINKS INSIDE THE DROPDOWN TO LAY OUT HORIZONTALLY */
+  .topnav #myLinks a {
+    display: inline-block; /* Turns them back into horizontal elements */
+    width: auto;            /* Lets each link define its own width */
+    text-align: center;
+    padding: 14px 16px;    /* Retains your custom menu line padding */
+    line-height: 22px;     /* Vertically balances the alignment */
+  }
+}
+
+footer {
+background-color: transparent;
+padding-top: 0;
+}
+
+.container {
+width: 100%;
+margin-left: 0;
+display: flex;
+justify-content: center;
+background-color: transparent;
+}
+
+.footer-content {
+text-align: center;
+margin-bottom: 0;
+margin-top: 0;
+}
+
+
+.footer-contact{
+text-align: left;
+margin-left: 150px;
+color: white;
+}
+
+.footer-contact p {
+margin-top: 0;
+margin-bottom: 0px;
+line-height: 0.1;
+font-size: 10px;
+}
+
+/*Remove the margin on the very last item so it doesn't push down the container */
+.footer-contact p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-contact a {
+font-size: 10px;
+}
+
+.social-icons {
+text-align: center;
+padding: 0;
+margin-bottom: 0;
+}
+
+.social-icons li {
+display: inline-block;
+text-align: center;
+padding: 5px;
+}
+
+.social-icons i {
+color: white;
+font-size: 25px;
+}
+
+a {
+text-decoration: none;
+}
+
+a:hover {
+color: red;
+}
+
+.social-icons i:hover {
+color: red;
+}
+
+hr {
+border: 1px solid black;
+margin-bottom: 0px;
+margin-top: 0;
+width: 80%;
+justify-self: center;
+padding-top: 1px;
+}
+
+.bottom-bar{
+margin-top: 0;
+clear: both;
+background-color: #36454F;
+text-decoration: none;
+box-sizing: border-box;
+text-align: center;
+margin-bottom: 0;
+height: 60px;
+}
+
+.bottom-bar p{
+color:black;
+margin: 0;
+font-size: 12px;
+background-color: #36454F; 
+}
+
+.bottom-bar a{
+font-size: 13px;
+background-color: #36454F; 
+margin-bottom: 0;
+}
+
+a.terms::before {
+content: "";
+position: absolute;
+transform: translate(-40%, -50%);
+left: 45%;
+bottom: 10px;
+width: 0;
+height: 1px;
+background: red;
+transition-duration: .6s;
+}
+
+a.terms:hover::before {
+width: 110px;
+}
+
+a.privacy::before {
+content: "";
+position: absolute;
+transform: translate(-25%, -50%);
+left: 55%;
+bottom: 10px;
+width: 0;
+height: 1px;
+background: red;
+transition-duration: .6s;
+}
+
+a.privacy:hover::before {
+width: 50px;
+}
+
+footer:hover #floating-btn-container {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.conclusion p {
+display: block;
+margin-bottom: 20px;
+text-align: center;
+}
+
+.choose p {
+text-align: center;
+justify-self: center;
+}
+ 
+.proposition {
+justify-self: center;
+}
+
+.target {
+justify-self: center;
+}	
+
+.offer {
+justify-self: center;
+}
+
+.proposition li {
+text-align: left;
+}
+
+.target li {
+text-align: left;
+}	
+
+.offer li {
+text-align: left;
+}
+/* Consultation form*/
+.form-container {
+width: 400px; 
+max-width: 100%; 
+margin: 20px auto; 
+padding: 30px; 
+background-color: transparent; 
+border-radius: 10px; 
+box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+} 
+
+label {
+display: block;
+margin-top: 15px;
+margin-bottom: 5px; 
+font-weight: bold; 
+} 
+ 
+input {
+width: 100%; 
+padding: 12px; 
+box-sizing: border-box; 
+border: 1px solid #ccc;
+border-radius: 5px; 
+}
+ 
+input:focus {
+border-color: #FFD700;
+outline: none; 
+} 
+
+button 
+{ width: 100%; 
+padding: 12px; 
+margin-top: 20px; 
+background-color: #87CEFA; 
+border: none; 
+border-radius: 5px; 
+color: white; 
+font-size: 18px; 
+cursor: pointer;
+}
+
+button:hover {
+background-color: #023E8A;
+}
+
+/*pop up windows terms */
+.terms-overlay {
+display: none;
+position: fixed;
+z-index: 99999;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.75) !important; 
+}
+
+.terms-content {
+position: relative;
+background-color: black !important;
+margin: 3vh auto;
+padding: 15px;
+max-width: 800px;
+width: 85%;
+height: 90vh;
+box-sizing: border-box;
+border-radius: 10px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
+            0 4px 8px rgba(0, 0, 0, 0.06),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            0 24px 48px rgba(0, 0, 0, 0.10);
+display: flex;
+flex-direction: column;
+}
+
+.terms-body {
+overflow-y: auto;
+flex: 1;
+padding-right: 10px;
+text-align: left;
+color: white;
+font-size: 14px;
+line-height: 1.0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #aaaaaa;
+  font-size: 30px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #ff0000;
+}
+
+
+/*pop up windows terms */
+.privacy-overlay {
+display: none;
+position: fixed;
+z-index: 99999;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.75) !important; 
+}
+
+.privacy-content {
+position: relative;
+background-color: black !important;
+margin: 3vh auto;
+padding: 15px;
+max-width: 800px;
+width: 85%;
+height: 90vh;
+box-sizing: border-box;
+border-radius: 10px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
+            0 4px 8px rgba(0, 0, 0, 0.06),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            0 24px 48px rgba(0, 0, 0, 0.10);
+display: flex;
+flex-direction: column;
+}
+
+.privacy-body {
+overflow-y: auto;
+flex: 1;
+padding-right: 10px;
+text-align: left;
+color: white;
+font-size: 14px;
+line-height: 1.0;
+}
