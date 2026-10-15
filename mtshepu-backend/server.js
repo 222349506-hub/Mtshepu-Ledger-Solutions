@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const nodemailer = require('nodemailer');
@@ -32,8 +34,12 @@ db.run(`CREATE TABLE IF NOT EXISTS customer_orders (
 const emailTransporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'Jaymtshepu@gmail.com',
-    pass: 'YOUR_EMAIL_APP_PASSWORD_HERE' // Use a Gmail App Password, not your login password
+    user: 'christhembabikitsha@gmail.com',
+    pass: process.env.GMAIL_PASS
+  },
+  tls: {
+    // 💡 This line prevents Node.js from crashing over the self-signed certificate chain
+    rejectUnauthorized: false 
   }
 });
 
@@ -41,10 +47,9 @@ const emailTransporter = nodemailer.createTransport({
 // --- 3. INBOUND DATA ENDPOINT ROUTE ---
 // --- 3. INBOUND DATA ENDPOINT ROUTE ---
 app.post('/api/orders/submit', (req, res) => {
-  // Destructure the new variables sent by your frontend script
-  const { clientName, clientEmail, isCustomOrder, selectedPackage, selectedItems, transactions } = req.body;
+  const { clientName, clientEmail, selectedItems, transactions } = req.body;
 
-  // Basic validation required for both pathways
+  // Basic validation required
   if (!clientName || !clientEmail) {
     return res.status(400).json({ success: false, message: "Name and email parameters are required." });
   }
@@ -55,30 +60,54 @@ app.post('/api/orders/submit', (req, res) => {
   let emailSubject = "";
   let emailBody = "";
 
-  // Pathway A: Handle Custom Pricing Calculator Submission
-  if (isCustomOrder) {
-    if (!selectedItems || !Array.isArray(selectedItems) || selectedItems.length === 0) {
-      return res.status(400).json({ success: false, message: "Please select at least 1 feature task module item." });
-    }
+  // DYNAMIC RUNTIME PATHWAY DETECTOR:
+  // If selectedItems exists and has content, treat it cleanly as a Calculator Custom Order
+  if (selectedItems && Array.isArray(selectedItems) && selectedItems.length > 0) {
+    
+    // Explicit server-side pricing engine matrix mirroring your frontend values
+    const BACKEND_PRICE_PER_ITEM = {
+      "Bank reconciliation (1 month)": 950,
+      "Preparing monthly income & Expense summary": 400,
+      "Categorizing and posting": 450,
+      "Debtors and Creditors aging report": 750,
+      "Suppliers and Customer updates": 350,
+      "Monthly management Report": 400,
+      "Organizing Files (Digital)": 250,
+      "Fixed asset register (basic)": 450,
+      "Debtors follow-ups": 200,
+      "Suppliers statement reconciliation": 350,
+      "Monthly management pack": 650,
+      "Budget vs Actual (basic)": 550,
+      "WhatsApp Support": 150
+    };
 
-    const PRICE_PER_ITEM = 150;
-    const PRICING_MAP = { "40-60 transactions": 450, "100-150 transactions": 850, "200-250 transactions": 1445 };
-    const baseCost = PRICING_MAP[transactions] || 0;
-    const verifiedTotal = (selectedItems.length * PRICE_PER_ITEM) + baseCost;
+    const TRANSACTION_PRICING_MAP = { 
+      "40-60 transactions": 450, 
+      "100-150 transactions": 850, 
+      "200-250 transactions": 1150 
+    };
+
+    // Calculate features total dynamically based on item name matching
+    let featuresTotalCost = 0;
+    selectedItems.forEach(item => {
+      featuresTotalCost += BACKEND_PRICE_PER_ITEM[item] || 0;
+    });
+
+    const baseVolumeCost = TRANSACTION_PRICING_MAP[transactions] || 0;
+    const verifiedTotal = featuresTotalCost + baseVolumeCost;
 
     calculatedInvestment = `R ${verifiedTotal}.00`;
     itemsString = `Custom Build: ${selectedItems.join(', ')}`;
     emailSubject = '🚨 New Custom Package Plan Compiled - Action Required';
     emailBody = `Admin Order Notice Summary:\n\nClient Name: ${clientName}\nClient Email: ${clientEmail}\nChosen Workspace Features: ${itemsString}\nExpected Monthly Volume: ${transactionTier}\nVerified Investment Level: ${calculatedInvestment}\n\nAccess local vault records file logs directly to verify contract invoice dispatch setup tracking details.`;
 
-  // Pathway B: Handle Fixed Standard Subscription Package Modal Click
   } else {
-    if (!selectedPackage) {
-      return res.status(400).json({ success: false, message: "No operational tier package selection defined." });
-    }
-
+    // FALLBACK PATHWAY: Handle Fixed Standard Subscription Packages if selectedItems is empty
+    const selectedPackage = req.body.selectedPackage || "Standard Package"; 
+    
     // Set prices for your predefined packages directly to prevent spoofing
     const FIXED_PRICING = { "Basic Package": "R 450.00", "Standard Package": "R 850.00", "Professional Package": "R 1445.00" };
+    
     calculatedInvestment = FIXED_PRICING[selectedPackage] || "Contact for Quote";
     itemsString = `Standard Tier Subscription: ${selectedPackage}`;
     emailSubject = `💼 New Subscription Order: ${selectedPackage}`;
@@ -96,8 +125,8 @@ app.post('/api/orders/submit', (req, res) => {
 
     // Dispatch notification to your administration portal mailbox
     const alertEmailOptions = {
-      from: 'Jaymtshepu@gmail.com',
-      to: 'Jaymtshepu@gmail.com',
+      from: 'christhembabikitsha@gmail.com',
+      to: 'christhembabikitsha@gmail.com',
       subject: emailSubject,
       text: emailBody
     };
@@ -112,14 +141,13 @@ app.post('/api/orders/submit', (req, res) => {
 });
 
 
-
 // --- 4. SECURE ADMIN-ONLY DASHBOARD GATEWAY PORTAL ---
 // --- SECURE ADMIN-ONLY DASHBOARD GATEWAY PORTAL ---
 // Matches the exact endpoint URL called by your admin.html layout front-end dashboard panel script
 app.get('/api/orders/retrieve-vault', (req, res) => {
   const adminSecretKey = req.headers['x-admin-auth'];
 
-  if (adminSecretKey !== 'MtshepuSecuredAdmin2026!') {
+  if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
     return res.status(403).json({ success: false, message: "Access Denied: Invalid Administrative Authorization Token Criteria." });
   }
 
