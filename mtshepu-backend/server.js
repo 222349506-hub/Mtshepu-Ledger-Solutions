@@ -153,4 +153,10 @@ app.patch('/api/orders/update-status/:id', (req, res) => {
   });
 });
 
-app.listen(3000, () => console.log('Mtshepu secure backend environment listening on port 3000...'));
+const PORT = 3000; // your port number
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
+});
+
