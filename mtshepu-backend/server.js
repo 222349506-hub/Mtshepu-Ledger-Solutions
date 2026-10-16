@@ -8,7 +8,11 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(express.static(__dirname)); 
-app.use(cors()); // Permits communication across separate front-end ports safely
+app.use(cors({
+  origin: '*', // Allows requests from any frontend URL or device
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-auth'] // Explicitly allows your admin token header
+}));
 
 // --- 1. INITIALISE SQLITE STORAGE FILE DATABASE ---
 const db = new sqlite3.Database('./mtshepu_ledger_vault.db', (err) => {
