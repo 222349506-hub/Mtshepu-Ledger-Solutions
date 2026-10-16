@@ -3,3 +3,7 @@
 
 # Dependency folders
 node_modules/
+
+# Local secrets and databases
+.env
+*.db

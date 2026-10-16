@@ -181,8 +181,12 @@ app.patch('/api/orders/update-status/:id', (req, res) => {
   });
 });
 
-const PORT = 3000; // your port number
+const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
+
+app.get('/', (req, res) => {
+  res.send('Backend server is running successfully!');
+});
 
 app.listen(PORT, HOST, () => {
     console.log(`Server is running on http://${HOST}:${PORT}`);
