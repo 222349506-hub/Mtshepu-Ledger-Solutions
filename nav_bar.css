@@ -887,11 +887,7 @@ margin: 20px 0;
 max-width: 400px;
 }
 
-/* Mobile responsive collapsing mechanics */
 @media screen and (max-width: 992px) {
-  .packages-container { width: 90%; }
-  .packages { flex-direction: column; }
-}
 
 
 
@@ -927,6 +923,11 @@ max-width: 400px;
 }
 
 @media screen and (max-width: 992px) {
+  .packages-container { width: 90%; }
+  .packages { flex-direction: column; }
+}
+
+	
     .hero {
         min-height: 100vh;
         background-attachment: scroll;
