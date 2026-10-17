@@ -897,7 +897,12 @@ max-width: 400px;
 @media screen and (min-width: 992px) {
   
   /* 1. HIDE THE HAMBURGER ICON BUTTON ON DESKTOP */
-  .topnav a.icon {
+
+
+
+
+@media screen and (max-width: 992px) {
+	  .topnav a.icon {
     display: none;
   }
 
@@ -922,11 +927,6 @@ max-width: 400px;
     padding: 14px 16px;    /* Retains your custom menu line padding */
     line-height: 22px;     /* Vertically balances the alignment */
   }
-}
-
-
-
-@media screen and (max-width: 992px) {
     .hero {
         min-height: 100vh;
         background-attachment: scroll;
