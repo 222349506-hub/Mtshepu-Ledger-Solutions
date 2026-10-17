@@ -986,7 +986,7 @@ max-width: 400px;
     }
 	
 	    .getintouch {
-animation: fadeOutButton 1s ease forwards;
+display: none;
     }
 
     .getintouch1,
@@ -1217,16 +1217,5 @@ animation: fadeOutButton 1s ease forwards;
     .privacy-content {
         width: 96%;
         padding: 10px;
-    }
-}
-
-@keyframes fadeOutButton {
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        visibility: hidden;
     }
 }
