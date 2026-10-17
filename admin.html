@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mtshepu Ledger Vault - Admin Portal</title>
+	
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --text: #334155;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .auth-bar {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .auth-bar label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .auth-bar input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .btn-load {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-load:hover {
+            background-color: #1d4ed8;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        small {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1 id="currentPage">Mtshepu Ledger Storage Vault</h1>
+        
+        <!-- Authentication Token Input Row -->
+        <div class="auth-bar">
+            <label for="adminTokenInput">Administrative Order Routing Queue</label>
+            <input 
+                type="password" 
+                id="adminTokenInput" 
+                placeholder="Enter admin token..." 
+                autocomplete="current-password"
+            >
+            <button class="btn-load" onclick="loadVaultOrders()">Load Orders</button>
+        </div>
+
+        <!-- Orders Target Output Matrix Grid -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Client Details</th>
+                        <th>Selected Package / Features</th>
+                        <th>Volume Tier</th>
+                        <th>Investment</th>
+                        <th>Date</th>
+                        <th>Status Action</th>
+                    </tr>
+                </thead>
+                <tbody id="vaultTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #64748b; padding: 30px;">
+                            Provide an active administrative token and click "Load Orders".
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+   <script>
+        // Set page title automatically on load
+        document.addEventListener("DOMContentLoaded", () => {
+            const pageTitleElement = document.getElementById("currentPage");
+            if (pageTitleElement) {
+                pageTitleElement.textContent = document.title;
+            }
+        });
+
+        // Fetch and display securely stored administrative orders
+        function loadVaultOrders() {
+            const tokenInput = document.getElementById("adminTokenInput");
+            const token = tokenInput ? tokenInput.value.trim() : "";
+
+            if (!token) {
+                alert("Please provide an active administrative token before loading.");
+                return;
+            }
+
+            // Fire the request with the token attached inside the Authorization header
+            fetch('https://ml-server-1-sdxt.onrender.com/api/orders/retrieve-vault', {
+                method: 'GET',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                }
+            })
+            .then(response => {
+                if (response.status === 403) {
+                    throw new Error("403 Forbidden: Invalid or expired administrative token.");
+                }
+                if (!response.ok) {
+                    throw new Error(`Server returned status code: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.vaultRecords) {
+                    renderVaultTable(data.vaultRecords);
+                } else {
+                    alert("Vault Error: " + (data.message || "Failed to parse records data."));
+                }
+            })
+            .catch(err => {
+                console.error("Administrative Vault Access Error:", err);
+                alert(err.message || "Could not connect to the administrative backend.");
+            });
+        }
+
+        // Dynamically build rows inside your admin table template
+        function renderVaultTable(records) {
+            const tableBody = document.getElementById("vaultTableBody");
+            if (!tableBody) {
+                console.error("Could not find a table body element with id='vaultTableBody'");
+                return;
+            }
+
+            // Clear existing static placeholder elements
+            tableBody.innerHTML = "";
+
+            if (records.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No administrative orders found in the system.</td></tr>`;
+                return;
+            }
+
+            // Populate rows dynamically from server metadata matrix
+            records.forEach(order => {
+                const row = document.createElement("tr");
+                
+                // Format package details or custom module arrays cleanly
+                const packageDetails = order.isCustomOrder 
+                    ? `<strong>Custom:</strong> ${order.selectedItems ? order.selectedItems.join(', ') : 'None'}`
+                    : order.selectedPackage || "N/A";
+
+                // Ensure value rendering uses appropriate fallbacks
+                const pricingDisplay = order.investment 
+                    ? order.investment 
+                    : "R 0.00";
+
+                row.innerHTML = `
+                    <td>${order.id || order._id || 'N/A'}</td>
+                    <td>
+                        <strong>${order.clientName || 'Unknown'}</strong><br>
+                        <small>${order.clientEmail || 'N/A'}</small>
+                    </td>
+                    <td>${packageDetails}</td>
+                    <td>${order.transactions || 'Standard'}</td>
+                    <td>${pricingDisplay}</td>
+                    <td>${order.date ? new Date(order.date).toLocaleDateString('en-ZA') : 'N/A'}</td>
+                    <td><span class="status-badge">${order.status || 'Pending'}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
