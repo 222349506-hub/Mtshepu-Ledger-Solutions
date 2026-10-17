@@ -896,7 +896,7 @@ max-width: 400px;
 
 
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) {
   
   /* 1. HIDE THE HAMBURGER ICON BUTTON ON DESKTOP */
   .topnav a.icon {
@@ -926,4 +926,308 @@ max-width: 400px;
   }
 }
 
+@media screen and (max-width: 992px) {
+    .hero {
+        min-height: 100vh;
+        background-attachment: scroll;
+        padding: 20px 15px 80px;
+    }
 
+    .hero h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .logospace {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 220px;
+        padding: 10px;
+    }
+
+    .imglogo {
+        width: 280px;
+        max-width: 80%;
+        height: auto;
+        max-height: 220px;
+    }
+
+    .logo-text {
+        width: 100%;
+        max-width: 500px;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .index-paragraph {
+        width: 90%;
+        max-width: 700px;
+        padding: 15px;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    .services {
+        width: 90%;
+        height: auto;
+        min-height: 0;
+    }
+
+
+    .explore {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        width: 160px;
+        max-width: 90%;
+        margin: 12px auto;
+        text-align: center;
+    }
+	
+	    .getintouch {
+animation: fadeOutButton 1s ease forwards;
+    }
+
+    .getintouch1,
+    .getintouch2 {
+        position: relative;
+        left: auto;
+        width: 160px;
+        max-width: 90%;
+        margin: 12px auto;
+    }
+
+    /* Footer */
+    .footer-contact {
+        margin-left: 0;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    /* Modal */
+    .terms-content,
+    .privacy-content {
+        width: 92%;
+        max-width: 800px;
+        height: 90vh;
+        margin: 5vh auto;
+    }
+}
+
+
+/* ---------- PHONES ---------- */
+@media screen and (max-width: 767px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Hero section */
+    .hero {
+        padding: 15px 10px 90px;
+        background-attachment: scroll;
+    }
+
+    .hero h1 {
+        font-size: 1.6rem;
+        line-height: 1.25;
+        margin: 15px 5px;
+    }
+
+    /* Logo */
+    .logospace {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        padding: 5px;
+    }
+
+    .imglogo {
+        display: block;
+        width: 220px;
+        max-width: 80%;
+        height: auto;
+        margin: 0 auto;
+    }
+
+    .logo-text {
+        width: 100%;
+        max-width: 100%;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        padding: 5px 10px;
+    }
+
+    /* Introduction paragraph */
+    .index-paragraph {
+        width: 95%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 12px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    /* Buttons */
+    .getintouch,
+    .explore {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        width: 90%;
+        max-width: 240px;
+        height: auto;
+        min-height: 40px;
+        margin: 12px auto;
+        text-align: center;
+    }
+
+    .getintouch a,
+    .explore a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 40px;
+    }
+
+    /* Footer */
+    footer {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 95%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+    .footer-content {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .footer-contact {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer-contact p {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        line-height: 1.6;
+    }
+
+    .social-icons {
+        padding-left: 0;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* Bottom footer */
+    .bottom-bar {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .bottom-bar p {
+        line-height: 1.5;
+    }
+
+    .bottom-bar a {
+        display: block;
+        margin: 8px 0;
+    }
+
+    /* Terms and Privacy */
+    .terms-content,
+    .privacy-content {
+        width: 94%;
+        height: 90vh;
+        max-height: 90vh;
+        margin: 5vh auto;
+        padding: 15px;
+    }
+
+    .terms-content h1,
+    .privacy-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .terms-content h2,
+    .privacy-content h2 {
+        font-size: 1.1rem;
+    }
+
+    .terms-body,
+    .privacy-body {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        overflow-y: auto;
+    }
+
+    .close-btn {
+        font-size: 28px;
+        right: 10px;
+        top: 5px;
+    }
+}
+
+
+/* ---------- VERY SMALL PHONES ---------- */
+@media screen and (max-width: 400px) {
+
+    .hero h1 {
+        font-size: 1.4rem;
+    }
+
+    .imglogo {
+        width: 190px;
+    }
+
+    .logo-text {
+        font-size: 0.9rem;
+    }
+
+    .index-paragraph {
+        width: 98%;
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .getintouch,
+    .explore {
+        width: 95%;
+    }
+
+    .terms-content,
+    .privacy-content {
+        width: 96%;
+        padding: 10px;
+    }
+}
+
+@keyframes fadeOutButton {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
