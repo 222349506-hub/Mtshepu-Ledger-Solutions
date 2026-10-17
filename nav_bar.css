@@ -927,11 +927,6 @@ max-width: 400px;
 
 
 @media screen and (max-width: 992px) {
-  .packages-container { width: 90%; }
-  .packages { flex-direction: column; }
-}
-
-	
     .hero {
         min-height: 100vh;
         background-attachment: scroll;
