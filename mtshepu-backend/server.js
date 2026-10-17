@@ -4,16 +4,56 @@ const express = require("express");
 const cors = require("cors");
 const sqlite3 = require('sqlite3').verbose();
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Allow requests while you are setting up your website.
-// Restrict this to your website's origin before production.
-app.use(cors());
+app.use(cors({
+    origin: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-auth'],
+    methods: ['GET','POST','PATCH','OPTIONS']
+}));
 
 app.use(express.json());
 app.use(express.static(__dirname)); 
+
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Connected to permanent MongoDB"))
+	
+// Debug log to trace what Node is actually receiving
+console.log("Attempting connection with URI:", process.env.MONGO_URI);
+
+if (!process.env.MONGO_URI) {
+  console.error("Fatal Error: MONGO_URI is missing from your environment variables!");
+  process.exit(1);
+}
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("Successfully connected to MongoDB."))
+	
+    .catch(err => console.error("Mongo error:", err));
+// --- SCHEMA - This replaces your in-memory array ---
+const OrderSchema = new mongoose.Schema({
+    clientName: String,
+    clientEmail: String,
+    selectedPackage: String,
+    selectedItems: Array,
+    isCustomOrder: Boolean,
+    transactions: String,
+    investment: String,
+    status: { type: String, default: 'Pending' },
+    date: { type: Date, default: Date.now }
+});
+const Order = mongoose.model('Order', OrderSchema);
+// --- AUTH MIDDLEWARE ---
+function adminAuth(req, res, next) {
+    const token = req.headers['x-admin-auth'] || req.headers['authorization']?.replace('Bearer ','');
+    if (!token || token.trim() !== (process.env.ADMIN_TOKEN || '').trim()) {
+        return res.status(403).json({ success: false, message: "Access Denied: Invalid Administrative Authorization Token Criteria." });
+    }
+    next();
+}
 
 // --- 1. INITIALISE SQLITE STORAGE FILE DATABASE ---
 const db = new sqlite3.Database('./mtshepu_ledger_vault.db', (err) => {
@@ -57,136 +97,34 @@ app.get("/", (req, res) => {
 });
 
 // --- 4. INBOUND DATA ENDPOINT ROUTE ---
-app.post('/api/orders/submit', (req, res) => {
-    const { clientName, clientEmail, selectedItems, transactions } = req.body;
-
-    // Basic validation required
-    if (!clientName || !clientEmail) {
-        return res.status(400).json({ 
-            success: false, 
-            message: "Name and email parameters are required." 
-        });
+app.post('/api/orders/submit', async (req, res) => {
+    try {
+        const newOrder = new Order(req.body);
+        await newOrder.save(); // SAVES PERMANENTLY TO MONGODB
+        res.json({ success: true, order: newOrder });
+    } catch(e) {
+        res.status(500).json({ success: false, message: e.message });
     }
-
-    let calculatedInvestment = "";
-    let itemsString = "";
-    let transactionTier = transactions || "N/A";
-    let emailSubject = "";
-    let emailBody = "";
-
-    // DYNAMIC RUNTIME PATHWAY DETECTOR:
-    if (selectedItems && Array.isArray(selectedItems) && selectedItems.length > 0) {
-        // Explicit server-side pricing engine matrix mirroring your frontend values
-        const BACKEND_PRICE_PER_ITEM = {
-            "Bank reconciliation (1 month)": 950,
-            "Preparing monthly income & Expense summary": 400,
-            "Categorizing and posting": 450,
-            "Debtors and Creditors aging report": 750,
-            "Suppliers and Customer updates": 350,
-            "Monthly management Report": 400,
-            "Organizing Files (Digital)": 250,
-            "Fixed asset register (basic)": 450,
-            "Debtors follow-ups": 200,
-            "Suppliers statement reconciliation": 350,
-            "Monthly management pack": 650,
-            "Budget vs Actual (basic)": 550,
-            "WhatsApp Support": 150
-        };
-
-        const TRANSACTION_PRICING_MAP = { 
-            "40-60 transactions": 450, 
-            "100-150 transactions": 850, 
-            "200-250 transactions": 1150 
-        };
-
-        // Calculate features total dynamically based on item name matching
-        let featuresTotalCost = 0;
-        selectedItems.forEach(item => {
-            featuresTotalCost += BACKEND_PRICE_PER_ITEM[item] || 0;
-        });
-
-        const baseVolumeCost = TRANSACTION_PRICING_MAP[transactions] || 0;
-        const verifiedTotal = featuresTotalCost + baseVolumeCost;
-
-        calculatedInvestment = `R ${verifiedTotal}.00`;
-        itemsString = `Custom Build: ${selectedItems.join(', ')}`;
-        emailSubject = '🚨 New Custom Package Plan Compiled - Action Required';
-        emailBody = `Admin Order Notice Summary:\n\nClient Name: ${clientName}\nClient Email: ${clientEmail}\nChosen Workspace Features: ${itemsString}\nExpected Monthly Volume: ${transactionTier}\nVerified Investment Level: ${calculatedInvestment}\n\nAccess local vault records file logs directly to verify contract invoice dispatch setup tracking details.`;
-
-    } else {
-        // FALLBACK PATHWAY: Handle Fixed Standard Subscription Packages if selectedItems is empty
-        const selectedPackage = req.body.selectedPackage || "Standard Package"; 
-        
-        // Set prices for your predefined packages directly to prevent spoofing
-        const FIXED_PRICING = { "Basic Package": "R 450.00", "Standard Package": "R 850.00", "Professional Package": "R 1445.00" };
-        
-        calculatedInvestment = FIXED_PRICING[selectedPackage] || "Contact for Quote";
-        itemsString = `Standard Tier Subscription: ${selectedPackage}`;
-        emailSubject = `💼 New Subscription Order: ${selectedPackage}`;
-        emailBody = `Admin Order Notice Summary:\n\nClient Name: ${clientName}\nClient Email: ${clientEmail}\nSelected Package Plan: ${selectedPackage}\nAssigned Price Tier: ${calculatedInvestment}\n\nAccess local vault records file logs directly to verify contract invoice dispatch setup tracking details.`;
-    }
-
-    // Inject records into SQLite database table data matrix row records securely
-    const sqlInsert = `INSERT INTO customer_orders (client_name, client_email, selected_items, transaction_tier, calculated_investment, status) VALUES (?, ?, ?, ?, ?, 'Pending')`;
-    
-    db.run(sqlInsert, [clientName, clientEmail, itemsString, transactionTier, calculatedInvestment], function(err) {
-        if (err) {
-            console.error("Database Engine Write Error:", err.message);
-            return res.status(500).json({ success: false, message: "Storage validation crash on database engine." });
-        }
-
-        // Dispatch notification to your administration portal mailbox
-        const alertEmailOptions = {
-            from: 'christhembabikitsha@gmail.com',
-            to: 'christhembabikitsha@gmail.com',
-            subject: emailSubject,
-            text: emailBody
-        };
-
-        emailTransporter.sendMail(alertEmailOptions, (mailErr, info) => {
-            if (mailErr) console.error("Mail server alert delivery dispatch error failed:", mailErr);
-            else console.log("Admin notification email sent: " + info.response);
-        });
-
-        res.json({ success: true, orderId: this.lastID });
-    });
 });
 
 // --- 5. SECURE ADMIN-ONLY DASHBOARD GATEWAY PORTAL ---
-app.get('/api/orders/retrieve-vault', (req, res) => {
-    const adminSecretKey = req.headers['x-admin-auth'];
-
-    if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
-        return res.status(403).json({ success: false, message: "Access Denied: Invalid Administrative Authorization Token Criteria." });
+app.get('/api/orders/retrieve-vault', adminAuth, async (req, res) => {
+    try {
+        const vaultRecords = await Order.find().sort({ date: -1 }); // Gets from DB, not memory
+        res.json({ success: true, vaultRecords });
+    } catch(e) {
+        res.status(500).json({ success: false, message: e.message });
     }
-
-    db.all(`SELECT * FROM customer_orders ORDER BY submission_date DESC`, [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: err.message });
-        }
-        res.json({ success: true, vaultRecords: rows });
-    });
 });
 
 // --- SECURE API ROUTE TO UPDATE STATUS ---
-app.patch('/api/orders/update-status/:id', (req, res) => {
-    const adminSecretKey = req.headers['x-admin-auth'];
-    const orderId = req.params.id;
-    const { newStatus } = req.body;
-
-    // Verify Admin Security Token Credentials
-    if (adminSecretKey !== 'MtshepuSecuredAdmin2026!') {
-        return res.status(403).json({ success: false, message: "Access Denied: Invalid Administrative Token." });
+app.patch('/api/orders/update-status/:id', adminAuth, async (req, res) => {
+    try {
+        const updated = await Order.findByIdAndUpdate(req.params.id, { status: req.body.newStatus }, { new: true });
+        res.json({ success: true, order: updated });
+    } catch(e) {
+        res.status(500).json({ success: false, message: e.message });
     }
-
-    const sqlUpdate = `UPDATE customer_orders SET status = ? WHERE id = ?`;
-    
-    db.run(sqlUpdate, [newStatus, orderId], function(err) {
-        if (err) {
-            return res.status(500).json({ success: false, message: "Database update failure." });
-        }
-        res.json({ success: true, message: "Status updated successfully." });
-    });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
