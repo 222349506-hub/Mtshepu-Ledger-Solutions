@@ -1,22 +1,15 @@
-* {
-box-sizing: border-box;
-}
 
 body{
-	/* Eliminate default browser margins */
 margin: 0;
 padding: 0;
 position: relative;
-/* Ensure the body spans the full viewport height */
 min-height: 100vh;
 font-family: "Source Sans Pro",Arial, sans-serif; 
 color: white;
 background-color: #36454F;
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}	
+}
 
 .hero {
-/* Background Image */
 position: relative;
 align-items: center;
 justify-content: center;
@@ -24,8 +17,6 @@ background-image: url('background.png');
 background-size: cover;
 background-position: center ; 
 background-repeat: no-repeat; 
-background-attachment: fixed;
-padding-top: 20px;
 opacity: 0.8;
 }
 
@@ -66,7 +57,7 @@ text-align: center;
 .logospace {
 max-width: 100%;
 align-items: center;
-height: 290px;
+height: auto;
 display: flex;
 flex-direction: column;	
 position: relative;
@@ -101,7 +92,7 @@ justify-self: center;
 box-sizing: border-box;
 width: 70%;
 max-height: 100%;
-height: 700px;
+height: auto;
 background-color: transparent;
 
 }
@@ -381,8 +372,11 @@ background-color: transparent;
 
 
 footer {
-background-color: transparent;
-padding-top: 0;
+  background-color: transparent;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 20px;    
+  height: fit-content; 
 }
 
 .container {
@@ -391,12 +385,14 @@ margin-left: 0;
 display: flex;
 justify-content: center;
 background-color: transparent;
+height: fit-content;
 }
 
 .footer-content {
 text-align: center;
 margin-bottom: 0;
 margin-top: 0;
+height: fit-content;
 }
 
 
@@ -404,16 +400,17 @@ margin-top: 0;
 text-align: left;
 margin-left: 150px;
 color: white;
+height: fit-content;
 }
 
 .footer-contact p {
 margin-top: 0;
-margin-bottom: 0px;
+margin-bottom: 4px;
 line-height: 0.1;
 font-size: 10px;
+overflow-wrap: break-word;
 }
 
-/*Remove the margin on the very last item so it doesn't push down the container */
 .footer-contact p:last-child {
   margin-bottom: 0;
 }
@@ -425,7 +422,9 @@ font-size: 10px;
 .social-icons {
 text-align: center;
 padding: 0;
-margin-bottom: 0;
+margin-top: 5px;
+margin-bottom: 5px;
+height: fit-content;
 }
 
 .social-icons li {
@@ -468,7 +467,8 @@ text-decoration: none;
 box-sizing: border-box;
 text-align: center;
 margin-bottom: 0;
-height: 60px;
+height: fit-content; 
+padding: 10px 0; 
 }
 
 .bottom-bar p{
@@ -482,6 +482,7 @@ background-color: #36454F;
 font-size: 13px;
 background-color: #36454F; 
 margin-bottom: 0;
+display: inline-block;
 }
 
 a.terms::before {
@@ -658,7 +659,7 @@ line-height: 1.0;
 }
 
 
-/*pop up windows terms */
+/*pop up windows privacy */
 .privacy-overlay {
 display: none;
 position: fixed;
@@ -927,52 +928,53 @@ max-width: 400px;
 
 
 @media screen and (max-width: 992px) {
-	 footer {
+  footer {
     padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    height: fit-content;
+  }
+
+.footer-content{
 	padding-bottom: 0;
-	margin: 0;
-  }
+	margin-bottom: 0;
+}
 
-  /* Compact the content layout */
   .container {
-    width: 80%; /* Narrows the layout to pull elements inward */
+    width: 80%; 
   }
 
-  /* Cut the massive contact left margin in half and align text closer */
   .footer-contact {
     margin-left: 75px; 
   }
 
-  /* Shrink social icons by half */
   .social-icons i {
     font-size: 13px; 
   }
   
   .social-icons li {
-    padding: 2px 5px; /* Tighten up spacing around icons */
+    padding: 2px 5px; 
   }
 
-  /* Reduce the decorative separator width */
+
   hr {
     width: 50%;
   }
 
-  /* Shrink the bottom black bar height by half */
   .bottom-bar {
-    height: 30px; 
+    height: 80px;
+	padding: 8px 0;
   }
 
-  /* Re-align text vertically for the smaller bar */
   .bottom-bar p {
     font-size: 10px;
-    line-height: 30px; 
+    line-height: 1.2; 
   }
 
   .bottom-bar a {
     font-size: 11px;
   }
 
-  /* Adjust the hover underline animations to match the new size */
   a.terms::before {
     left: 47%;
     bottom: 5px;
@@ -990,8 +992,6 @@ max-width: 400px;
   }
     .hero {
         min-height: 100vh;
-        background-attachment: scroll;
-        padding: 20px 15px 80px;
     }
 
     .hero h1 {
@@ -1060,7 +1060,6 @@ animation: fadeOutButton 1s ease forwards;
         margin: 12px auto;
     }
 
-    /* Footer */
     .footer-contact {
         margin-left: 0;
     }
@@ -1071,7 +1070,6 @@ animation: fadeOutButton 1s ease forwards;
         margin: auto;
     }
 
-    /* Modal */
     .terms-content,
     .privacy-content {
         width: 92%;
@@ -1091,7 +1089,7 @@ animation: fadeOutButton 1s ease forwards;
 
     /* Hero section */
     .hero {
-        padding: 15px 10px 90px;
+        padding: 15px 10px 20px;
         background-attachment: scroll;
     }
 
@@ -1160,22 +1158,28 @@ animation: fadeOutButton 1s ease forwards;
     }
 
     /* Footer */
-    footer {
-        width: 100%;
-        overflow-x: hidden;
-    }
+  footer {
+    width: 100%;
+    overflow-x: hidden;
+    height: fit-content;
+  }
 
-    .container {
-        width: 95%;
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 10px;
-    }
+  .footer-content {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 5px;
+  }
 
     .footer-content {
         width: 100%;
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .footer-contact {
@@ -1187,31 +1191,32 @@ animation: fadeOutButton 1s ease forwards;
     .footer-contact p {
         overflow-wrap: anywhere;
         word-break: break-word;
-        line-height: 1.6;
+        line-height: 1.4;
     }
 
-    .social-icons {
-        padding-left: 0;
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
+ .social-icons {
+    padding-left: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+  }
 
-    /* Bottom footer */
-    .bottom-bar {
-        width: 100%;
-        text-align: center;
-        padding: 10px;
-    }
+  .bottom-bar {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    height: 80px;
+  }
 
     .bottom-bar p {
-        line-height: 1.5;
+        line-height: 1.4;
     }
 
     .bottom-bar a {
         display: block;
-        margin: 8px 0;
+        margin: 6px 0;
     }
 
     /* Terms and Privacy */
