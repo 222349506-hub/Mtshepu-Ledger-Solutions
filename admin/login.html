@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mtshepu Ledger Vault - Admin Login</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #1976d2; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; transition: background 0.2s; }
+        button:hover { background-color: #1565c0; }
+        .status-message { margin-top: 15px; font-size: 14px; color: #1976d2; min-height: 20px; }
+		/* Container box to keep the input text and eye aligned */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Make sure the text padding doesn't overflow beneath the eye button */
+.password-wrapper input[type="password"], 
+.password-wrapper input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    padding-right: 45px; /* Leaves space for the icon on the right */
+    margin-bottom: 0 !important; /* Overrides old margins */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Positions the clickable eye icon container */
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+
+.toggle-eye:hover stroke {
+    stroke: #1976d2; /* Changes eye color to blue when hovered */
+}
+
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Mtshepu Ledger Storage Vault</h2>
+    <p>Please enter your administrative access key to retrieve database logs.</p>
+  <div class="password-wrapper">
+    <input type="password" id="adminTokenInput" placeholder="Enter Authorization Key...">
+    <!-- The functional SVG eye icon toggler -->
+    <span class="toggle-eye" onclick="togglePasswordVisibility()">
+        <svg id="eyeIcon" xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+    </span>
+</div>
+    <button onclick="verifyAndRedirect()">Verify Authorization</button>
+    <div id="authStatusDisplay" class="status-message"></div>
+</div>
+
+<script>
+function togglePasswordVisibility() {
+    const tokenInput = document.getElementById("adminTokenInput");
+    const eyeIcon = document.getElementById("eyeIcon");
+    
+    if (!tokenInput) return;
+
+    if (tokenInput.type === "password") {
+        // Switch to visible text
+        tokenInput.type = "text";
+        
+        // Dynamic SVG modification: Adds a slash line over the eye icon (Eye Closed)
+        eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <line x1="1" y1="1" x2="23" y2="23" stroke="#1976d2" stroke-width="2"></line>
+        `;
+    } else {
+        // Switch back to hidden dots
+        tokenInput.type = "password";
+        
+        // Restore standard open eye SVG vectors
+        eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        `;
+    }
+}
+
+async function verifyAndRedirect() {
+        const tokenInput = document.getElementById("adminTokenInput");
+        const tokenValue = tokenInput ? tokenInput.value.trim() : "";
+    const statusDisplay = document.getElementById("authStatusDisplay");
+    
+    if (!tokenInput) {
+        alert("System Error: Could not locate the adminTokenInput element in the HTML DOM.");
+        return;
+    }
+    
+    if (!tokenValue) {
+        alert("An administrative access key is required.");
+        return;
+    }
+
+    if (statusDisplay) {
+        statusDisplay.style.color = "#1976d2";
+        statusDisplay.innerText = "Connecting to database vault...";
+    }
+
+    try {
+        const response = await fetch('https://web-environment-3f0z.onrender.com/api/orders/retrieve-vault', {
+            method: 'GET',
+            headers: { 
+                'Authorization': `Bearer ${tokenValue}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            alert(`Server Error (${response.status}): ${errorData.message || 'Access Configuration Issue'}`);
+            if (statusDisplay) statusDisplay.innerText = "";
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            localStorage.setItem("adminToken", tokenValue);
+            if (statusDisplay) statusDisplay.innerText = "Redirecting...";
+            window.location.href = "vault.html"; 
+        } else {
+            alert("Access Denied: " + (data.message || "Invalid Authorization Token."));
+            if (statusDisplay) statusDisplay.innerText = "";
+        }
+    } catch (e) {
+        console.error("Connection Error Trace:", e);
+        if (statusDisplay) {
+            statusDisplay.style.color = "#c62828";
+            statusDisplay.innerText = "Connection failed.";
+        }
+        alert("Could not establish a network handshake with the backend.");
+    }
+}
+
+// Global hook to allow pressing "Enter" key to log in natively
+document.addEventListener("DOMContentLoaded", () => {
+    const tokenInput = document.getElementById("adminTokenInput");
+    if (tokenInput) {
+        tokenInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                verifyAndRedirect();
+            }
+        });
+    }
+});
+
+</script>
+</body>
+</html>

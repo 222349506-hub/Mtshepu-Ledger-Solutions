@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mtshepu Ledger Vault - Control Panel Console</title>
+    <style>
+        :root { --primary: #1e293b; --accent: #2563eb; --text: #334155; --bg: #f8fafc; --border: #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .dashboard-container { max-width: 1200px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        input, select, button { padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: var(--accent); color: white; border: none; cursor: pointer; font-weight: 600; }
+        button:hover { background-color: #1d4ed8; }
+        .btn-danger { background-color: #dc3545; } .btn-danger:hover { background-color: #bd2130; }
+        .filter-bar { display: flex; gap: 10px; margin: 20px 0; align-items: center; flex-wrap: wrap; background:#f1f5f9; padding:15px; border-radius:6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+        th { background-color: #f1f5f9; color: var(--primary); font-weight: 600; }
+        tr:hover { background-color: #f8fafc; }
+        .clickable-id { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: bold; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-progress { background: #b8daff; color: #004085; }
+        .status-invoiced { background: #c3e6cb; color: #155724; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 550px; box-shadow: 0 5px 25px rgba(0,0,0,0.25); position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; color: #aaa; }
+        .detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .detail-label { font-weight: bold; color: #555; }
+        .detail-value { color: #111; text-align: right; max-width: 60%; }
+    </style>
+    <script>
+        // GATEWAY BLOCKER - Supports both token keys (old adminToken and new mtshepu_token)
+        const activeAdminToken = localStorage.getItem("mtshepu_token") || localStorage.getItem("adminToken");
+        if (!activeAdminToken) {
+            window.location.href = "admin-login.html";
+        }
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Custom Package Pipeline Orders Database Console</h2>
+            <button class="btn-danger" onclick="clearAdminSession()">Exit Console</button>
+        </div>
+        <div class="filter-bar">
+            <label>Search:</label>
+            <input type="text" id="searchBar" placeholder="Search by name or email..." oninput="applyFilters()">
+            <label>Category:</label>
+            <select id="statusFilter" onchange="applyFilters()">
+                <option value="ALL">📋 Show All Records</option>
+                <option value="Pending">⏳ Pending Only</option>
+                <option value="In Progress">⚙ In Progress Only</option>
+                <option value="Invoiced">✅ Invoiced Only</option>
+            </select>
+            <span id="recordCount" style="margin-left:auto; font-weight:bold;">Displaying: 0 records</span>
+        </div>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Submission Date</th>
+                        <th>Client Particulars</th>
+                        <th>Requested Processing Modules</th>
+                        <th>Volume Tier</th>
+                        <th>Monthly Quote</th>
+                        <th>Status Tracking</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr><td colspan="7" style="text-align:center; color:#64748b; padding:30px;">Connecting to ledger data stream...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- DETAIL MODAL - Same as admin.html -->
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3 style="margin-top:0;">Order Vault Manifest Profile</h3>
+            <div id="modalPackageTypeContainer"></div>
+            <div class="detail-row"><span class="detail-label">Order Reference ID:</span><span class="detail-value" id="mdId"></span></div>
+            <div class="detail-row"><span class="detail-label">Submission Date:</span><span class="detail-value" id="mdDate"></span></div>
+            <div class="detail-row"><span class="detail-label">Client Full Name:</span><span class="detail-value" id="mdName"></span></div>
+            <div class="detail-row"><span class="detail-label">Client Contact Email:</span><span class="detail-value" id="mdEmail"></span></div>
+            <div class="detail-row"><span class="detail-label">Volume Activity Tier:</span><span class="detail-value" id="mdTier"></span></div>
+            <div class="detail-row"><span class="detail-label">Calculated Monthly Rate:</span><span class="detail-value" id="mdInvestment" style="font-weight:bold; color:#28a745;"></span></div>
+            <div style="margin-top:15px;"><span class="detail-label">Requested Modules:</span><div id="mdItems" style="margin-top:8px; padding:10px; background:#f8f9fa; border-radius:4px;"></div></div>
+            <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                <label>Update Status:</label><br>
+                <select id="modalStatusSelect" style="width:100%; margin-top:5px;">
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Invoiced">Invoiced</option>
+                </select>
+                <button onclick="updateOrderStatus()" style="width:100%; margin-top:10px;">Save Status Update</button>
+            </div>
+        </div>
+    </div>
+<script>
+const targetBackendUrl = 'https://web-environment-3f0z.onrender.com/api/orders';
+let cachedVaultRecords = [];
+let currentlyTargetedOrderId = null;
+document.addEventListener("DOMContentLoaded", retrieveDatabaseVaultLogs);
+async function retrieveDatabaseVaultLogs() {
+    const token = localStorage.getItem("mtshepu_token") || localStorage.getItem("adminToken");
+    if (!token) {
+        clearAdminSession();
+        return;
+    }
+    try {
+        const res = await fetch(`${targetBackendUrl}/retrieve-vault`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-admin-auth': token,
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (res.status === 403 || res.status === 401) {
+            throw new Error("Invalid or expired token");
+        }
+        const data = await res.json();
+        if (data.success && data.vaultRecords) {
+            cachedVaultRecords = data.vaultRecords;
+            applyFilters();
+        } else {
+            document.getElementById("ordersTableBody").innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No records: ${data.message || 'Unknown error'}</td></tr>`;
+        }
+    } catch (e) {
+        console.error("Vault interaction failed:", e);
+        if (e.message.includes("Invalid") || e.message.includes("expired")) {
+            clearAdminSession();
+        } else {
+            document.getElementById("ordersTableBody").innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">Error syncing data log streams from Render backend: ${e.message}</td></tr>`;
+        }
+    }
+}
+function renderTableRows(records) {
+    const tbody = document.getElementById("ordersTableBody");
+    const countSpan = document.getElementById("recordCount");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    if(countSpan) countSpan.innerText = `Displaying: ${records.length} records`;
+    if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No administrative orders found in the system.</td></tr>`;
+        return;
+    }
+    records.forEach(order => {
+        const id = order.id || order._id || 'N/A';
+        const dateRaw = order.submission_date || order.date || order.createdAt;
+        const formattedDate = dateRaw ? new Date(dateRaw).toLocaleString('en-ZA') : 'N/A';
+        const clientName = order.client_name || order.clientName || 'Unknown';
+        const clientEmail = order.client_email || order.clientEmail || 'N/A';
+        let itemsStr = '';
+        if (order.isCustomOrder) {
+            const items = order.selected_items || order.selectedItems || [];
+            itemsStr = Array.isArray(items) ? items.join(', ') : (items || 'Custom');
+        } else {
+            itemsStr = order.selectedPackage || order.selected_package || 'N/A';
+            if (Array.isArray(itemsStr)) itemsStr = itemsStr.join(', ');
+        }
+        const tier = order.transaction_tier || order.transactions || 'Standard';
+        const investment = order.calculated_investment || order.investment || 'R 0.00';
+        const status = order.status || 'Pending';
+        let badgeClass = "status-pending";
+        if(status === "In Progress") badgeClass = "status-progress";
+        if(status === "Invoiced") badgeClass = "status-invoiced";
+        const shortItems = itemsStr.length > 35 ? itemsStr.substring(0,35)+"..." : itemsStr;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="clickable-id" onclick="launchDetailModal('${id}')">#${String(id).substring(0,8)}</td>
+            <td>${formattedDate}</td>
+            <td><strong>${clientName}</strong><br><span style='font-size:12px; color:#666;'>${clientEmail}</span></td>
+            <td title="${itemsStr}" style="text-align:center;">${shortItems}</td>
+            <td style="text-align:center;">${tier}</td>
+            <td style="font-weight:bold; text-align:center;">${investment}</td>
+            <td style="text-align:center;"><span class="status-badge ${badgeClass}">${status}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+function applyFilters() {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const statusSelection = document.getElementById("statusFilter").value;
+    const filtered = cachedVaultRecords.filter(order => {
+        const name = (order.client_name || order.clientName || '').toLowerCase();
+        const email = (order.client_email || order.clientEmail || '').toLowerCase();
+        const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+        const matchesStatus = (statusSelection === "ALL") || (order.status === statusSelection);
+        return matchesSearch && matchesStatus;
+    });
+    renderTableRows(filtered);
+}
+function launchDetailModal(orderId) {
+    const order = cachedVaultRecords.find(o => String(o.id || o._id) === String(orderId));
+    if(!order) return;
+    currentlyTargetedOrderId = order.id || order._id;
+    const id = order.id || order._id;
+    const dateRaw = order.submission_date || order.date || order.createdAt;
+    const clientName = order.client_name || order.clientName || 'Unknown';
+    const clientEmail = order.client_email || order.clientEmail || 'N/A';
+    const tier = order.transaction_tier || order.transactions || 'Standard';
+    const investment = order.calculated_investment || order.investment || 'R 0.00';
+    document.getElementById("mdId").innerText = `#${id}`;
+    document.getElementById("mdDate").innerText = dateRaw ? new Date(dateRaw).toLocaleString('en-ZA') : 'N/A';
+    document.getElementById("mdName").innerText = clientName;
+    document.getElementById("mdEmail").innerText = clientEmail;
+    document.getElementById("mdTier").innerText = tier;
+    document.getElementById("mdInvestment").innerText = investment;
+    document.getElementById("modalStatusSelect").value = order.status || 'Pending';
+    const itemsBox = document.getElementById("mdItems");
+    const badgeContainer = document.getElementById("modalPackageTypeContainer");
+    badgeContainer.innerHTML = '';
+    if (order.isCustomOrder) {
+        const items = order.selected_items || order.selectedItems || [];
+        const itemsArr = Array.isArray(items) ? items : (typeof items === 'string' ? items.split(',') : []);
+        itemsBox.innerHTML = `<ul style="margin:0; padding-left:20px; text-align:left;">${itemsArr.map(item => `<li>${String(item).trim()}</li>`).join('')}</ul>`;
+    } else {
+        let displayStr = order.selectedPackage || order.selected_package || 'N/A';
+        if (Array.isArray(displayStr)) displayStr = displayStr.join(', ');
+        itemsBox.innerHTML = `<div style="text-align:center;">${displayStr}</div>`;
+    }
+    document.getElementById("detailModal").style.display = "flex";
+}
+function updateOrderStatus() {
+    const activeToken = localStorage.getItem("mtshepu_token") || localStorage.getItem("adminToken");
+    const dropdownStatus = document.getElementById("modalStatusSelect").value;
+    fetch(`${targetBackendUrl}/update-status/${currentlyTargetedOrderId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${activeToken}`,
+            'x-admin-auth': activeToken
+        },
+        body: JSON.stringify({ newStatus: dropdownStatus, status: dropdownStatus })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            const rec = cachedVaultRecords.find(o => String(o.id || o._id) === String(currentlyTargetedOrderId));
+            if(rec) rec.status = dropdownStatus;
+            applyFilters();
+            closeModal();
+        } else {
+            alert("Status update rejected: " + (data.message || 'Unknown'));
+        }
+    })
+    .catch(err => console.error(err));
+}
+function closeModal() { document.getElementById("detailModal").style.display = "none"; }
+function clearAdminSession() {
+    localStorage.removeItem("mtshepu_token");
+    localStorage.removeItem("adminToken");
+    window.location.href = "login.html";
+}
+</script>
+</body>
+</html>
