@@ -46,12 +46,8 @@ const PRICE_PER_ITEM = {
 };
 const TRANSACTION_PRICING = {
   "40-60 transactions": 450,
-  "40 - 60 transactions": 450,
-  "40-60 Transactions": 450,
   "100-150 transactions": 850,
-  "100 - 150 Transactions": 850,
-  "200-250 transactions": 1150,
-  "200 - 250 Transactions": 1150
+  "200-250 transactions": 1150
 };
 
 function calculateInvestment(payload) {
@@ -65,9 +61,9 @@ function calculateInvestment(payload) {
   }
   // Standard packages - use same tier logic as before
   const pkg = payload.selectedPackage;
-  if (pkg === "Basic Package") return "R 1,550.00";
-  if (pkg === "Standard Package") return "R 2,650.00";
-  if (pkg === "Professional Package") return "R 3,550.00";
+  if (pkg === "Basic Package") return "R 1 550,00";
+  if (pkg === "Standard Package") return "R 2 650,00";
+  if (pkg === "Professional Package") return "R 3 550,00";
   return "R 0.00";
 }
 

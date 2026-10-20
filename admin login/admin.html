@@ -35,7 +35,6 @@
     </style>
 </head>
 <body>
-
     <!-- 1. AUTH SCREEN - Layout from 2nd doc, logic from 1st doc -->
     <div id="authScreen" class="auth-container">
         <h2>Mtshepu Ledger Storage Vault</h2>
@@ -43,14 +42,12 @@
         <input type="password" id="adminTokenInput" placeholder="Enter admin token..." style="width:100%; max-width:300px;" autocomplete="current-password"><br>
         <button onclick="authenticateAdmin()">Verify Authorization</button>
     </div>
-
     <!-- 2. DASHBOARD - Layout from 2nd doc -->
     <div id="dashboardScreen" class="dashboard-container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Custom Package Pipeline Orders Database Console</h2>
             <button class="btn-danger" onclick="logoutAdmin()">Exit Console</button>
         </div>
-
         <div class="filter-bar">
             <label>Search:</label>
             <input type="text" id="searchBar" placeholder="Search by name or email..." oninput="applyFilters()">
@@ -63,7 +60,6 @@
             </select>
             <span id="recordCount" style="margin-left:auto; font-weight:bold;">Displaying: 0 records</span>
         </div>
-
         <div style="overflow-x:auto;">
             <table>
                 <thead>
@@ -83,7 +79,6 @@
             </table>
         </div>
     </div>
-
     <!-- 3. MODAL - From 2nd doc -->
     <div id="detailModal" class="modal-overlay">
         <div class="modal-box">
@@ -108,12 +103,10 @@
             </div>
         </div>
     </div>
-
 <script>
-    const targetBackendUrl = 'https://ml-server-1-sdxt.onrender.com/api/orders';
+    const targetBackendUrl = 'https://web-environment-3f0z.onrender.com/api/orders';
     let cachedVaultRecords = [];
     let currentlyTargetedOrderId = null;
-
     // --- WORKING AUTH LOGIC FROM 1ST DOC ---
     function authenticateAdmin() {
         const tokenInput = document.getElementById("adminTokenInput");
@@ -122,7 +115,6 @@
             alert("Please provide an active administrative token.");
             return;
         }
-
         // Use the WORKING header format from your 1st doc (Bearer token)
         fetch(`${targetBackendUrl}/retrieve-vault`, {
             method: 'GET',
@@ -142,7 +134,6 @@
                 // Save token only if valid (from 2nd doc layout logic)
                 localStorage.setItem("mtshepu_token", tokenValue);
                 cachedVaultRecords = data.vaultRecords;
-
                 // Switch screens (from 2nd doc)
                 document.getElementById("authScreen").classList.add("hidden");
                 document.getElementById("dashboardScreen").classList.remove("hidden");
@@ -157,52 +148,51 @@
             alert(err.message);
         });
     }
-
     function renderTableRows(records) {
         const tbody = document.getElementById("ordersTableBody");
         const countSpan = document.getElementById("recordCount");
         if (!tbody) return;
         tbody.innerHTML = "";
         if(countSpan) countSpan.innerText = `Displaying: ${records.length} records`;
-
         if (records.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No administrative orders found in the system.</td></tr>`;
             return;
         }
-
         records.forEach(order => {
-            // SUPPORT BOTH old and new field names so it works with your current Render server
             const id = order.id || order._id || 'N/A';
             const dateRaw = order.submission_date || order.date || order.createdAt;
             const formattedDate = dateRaw ? new Date(dateRaw).toLocaleString('en-ZA') : 'N/A';
             const clientName = order.client_name || order.clientName || 'Unknown';
             const clientEmail = order.client_email || order.clientEmail || 'N/A';
-            const items = order.selected_items || order.selectedItems || order.selectedPackage || 'N/A';
-            const itemsStr = Array.isArray(items) ? items.join(', ') : items;
+            // FIXED: check isCustomOrder first, else [] truthy bug causes empty
+            let itemsStr = '';
+            if (order.isCustomOrder) {
+                const items = order.selected_items || order.selectedItems || [];
+                itemsStr = Array.isArray(items) ? items.join(', ') : (items || 'Custom');
+            } else {
+                itemsStr = order.selectedPackage || order.selected_package || 'N/A';
+                if (Array.isArray(itemsStr)) itemsStr = itemsStr.join(', ');
+            }
             const tier = order.transaction_tier || order.transactions || 'Standard';
             const investment = order.calculated_investment || order.investment || 'R 0.00';
             const status = order.status || 'Pending';
-
             let badgeClass = "status-pending";
             if(status === "In Progress") badgeClass = "status-progress";
             if(status === "Invoiced") badgeClass = "status-invoiced";
-
-            const shortItems = itemsStr.length > 45 ? itemsStr.substring(0,45)+"..." : itemsStr;
-
+            const shortItems = itemsStr.length > 35 ? itemsStr.substring(0,35)+"..." : itemsStr;
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="clickable-id" onclick="launchDetailModal('${id}')">#${String(id).substring(0,8)}</td>
                 <td>${formattedDate}</td>
                 <td><strong>${clientName}</strong><br><span style='font-size:12px; color:#666;'>${clientEmail}</span></td>
-                <td title="${itemsStr}">${shortItems}</td>
-                <td>${tier}</td>
-                <td style="font-weight:bold;">${investment}</td>
-                <td><span class="status-badge ${badgeClass}">${status}</span></td>
+                <td title="${itemsStr}" style="text-align:center;">${shortItems}</td>
+                <td style="text-align:center;">${tier}</td>
+                <td style="font-weight:bold; text-align:center;">${investment}</td>
+                <td style="text-align:center;"><span class="status-badge ${badgeClass}">${status}</span></td>
             `;
             tbody.appendChild(tr);
         });
     }
-
     function applyFilters() {
         const searchTerm = document.getElementById("searchBar").value.toLowerCase();
         const statusSelection = document.getElementById("statusFilter").value;
@@ -215,22 +205,17 @@
         });
         renderTableRows(filtered);
     }
-
     function launchDetailModal(orderId) {
         // Find by string comparison to handle both ObjectId and number
         const order = cachedVaultRecords.find(o => String(o.id || o._id) === String(orderId));
         if(!order) return;
         currentlyTargetedOrderId = order.id || order._id;
-
         const id = order.id || order._id;
         const dateRaw = order.submission_date || order.date || order.createdAt;
         const clientName = order.client_name || order.clientName || 'Unknown';
         const clientEmail = order.client_email || order.clientEmail || 'N/A';
         const tier = order.transaction_tier || order.transactions || 'Standard';
         const investment = order.calculated_investment || order.investment || 'R 0.00';
-        const items = order.selected_items || order.selectedItems || order.selectedPackage || 'N/A';
-        const itemsStr = Array.isArray(items) ? items.join(', ') : items;
-
         document.getElementById("mdId").innerText = `#${id}`;
         document.getElementById("mdDate").innerText = dateRaw ? new Date(dateRaw).toLocaleString('en-ZA') : 'N/A';
         document.getElementById("mdName").innerText = clientName;
@@ -238,22 +223,24 @@
         document.getElementById("mdTier").innerText = tier;
         document.getElementById("mdInvestment").innerText = investment;
         document.getElementById("modalStatusSelect").value = order.status || 'Pending';
-
         const badgeContainer = document.getElementById("modalPackageTypeContainer");
         const itemsBox = document.getElementById("mdItems");
-        const isCustom = order.isCustomOrder || (typeof itemsStr === 'string' && itemsStr.startsWith("Custom"));
-        
-        if(isCustom) {
-            badgeContainer.innerHTML = `<span class="package-type-badge badge-custom">🛠 Custom Service Configuration</span>`;
-            const clearFeatures = itemsStr.replace("Custom Build:", "").replace("Custom:", "").split(",");
-            itemsBox.innerHTML = `<ul style="margin:0; padding-left:18px;">${clearFeatures.map(item => `<li>${item.trim()}</li>`).join('')}</ul>`;
+        // Fixed vs Custom handling
+        if (order.isCustomOrder) {
+            // CUSTOM - bullet form, left-aligned (not centered)
+            const items = order.selected_items || order.selectedItems || [];
+            const itemsArr = Array.isArray(items) ? items : (typeof items === 'string' ? items.split(',') : []);
+            badgeContainer.innerHTML = '';
+            itemsBox.innerHTML = `<ul style="margin:0; padding-left:20px; text-align:left;">${itemsArr.map(item => `<li>${String(item).trim()}</li>`).join('')}</ul>`;
         } else {
-            badgeContainer.innerHTML = `<span class="package-type-badge badge-standard">📦 Fixed Package</span>`;
-            itemsBox.innerHTML = `<strong>${itemsStr.replace("Standard Tier Subscription:", "").trim()}</strong>`;
+            // FIXED - Basic / Standard / Professional - centered plain text
+            let displayStr = order.selectedPackage || order.selected_package || 'N/A';
+            if (Array.isArray(displayStr)) displayStr = displayStr.join(', ');
+            badgeContainer.innerHTML = '';
+            itemsBox.innerHTML = `<div style="text-align:center;">${displayStr}</div>`;
         }
         document.getElementById("detailModal").style.display = "flex";
     }
-
     function updateOrderStatus() {
         const activeToken = localStorage.getItem("mtshepu_token");
         const dropdownStatus = document.getElementById("modalStatusSelect").value;
@@ -279,10 +266,8 @@
         })
         .catch(err => console.error(err));
     }
-
     function closeModal() { document.getElementById("detailModal").style.display = "none"; }
     function logoutAdmin() { localStorage.removeItem("mtshepu_token"); location.reload(); }
-
     window.onload = () => {
         const existingToken = localStorage.getItem("mtshepu_token");
         if(existingToken) {

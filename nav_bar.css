@@ -927,6 +927,67 @@ max-width: 400px;
 
 
 @media screen and (max-width: 992px) {
+	 footer {
+    padding-top: 0;
+	padding-bottom: 0;
+	margin: 0;
+  }
+
+  /* Compact the content layout */
+  .container {
+    width: 80%; /* Narrows the layout to pull elements inward */
+  }
+
+  /* Cut the massive contact left margin in half and align text closer */
+  .footer-contact {
+    margin-left: 75px; 
+  }
+
+  /* Shrink social icons by half */
+  .social-icons i {
+    font-size: 13px; 
+  }
+  
+  .social-icons li {
+    padding: 2px 5px; /* Tighten up spacing around icons */
+  }
+
+  /* Reduce the decorative separator width */
+  hr {
+    width: 50%;
+  }
+
+  /* Shrink the bottom black bar height by half */
+  .bottom-bar {
+    height: 30px; 
+  }
+
+  /* Re-align text vertically for the smaller bar */
+  .bottom-bar p {
+    font-size: 10px;
+    line-height: 30px; 
+  }
+
+  .bottom-bar a {
+    font-size: 11px;
+  }
+
+  /* Adjust the hover underline animations to match the new size */
+  a.terms::before {
+    left: 47%;
+    bottom: 5px;
+  }
+  a.terms:hover::before {
+    width: 80px;
+  }
+
+  a.privacy::before {
+    left: 53%;
+    bottom: 5px;
+  }
+  a.privacy:hover::before {
+    width: 40px;
+  }
     .hero {
         min-height: 100vh;
         background-attachment: scroll;
