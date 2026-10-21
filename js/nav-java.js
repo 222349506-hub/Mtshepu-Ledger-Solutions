@@ -181,7 +181,9 @@ async function submitOrderPayloadToServer() {
     console.log("Server response", data);
     if(data.success){ 
       alert("Success! Filed to web-environment-3f0z DB"); 
-      closeCheckout(); 
+      closeCheckout();
+
+window.location.href = "Thank_You.html";	  
     } else {
       alert("Error: "+(data.message||"unknown"));
     }
@@ -236,6 +238,8 @@ async function submitCustomOrderToServer() {
       document.getElementById("clientEmailInput").value="";
       document.querySelectorAll('.custom-feature-checkbox:checked').forEach(b=>b.checked=false);
       calculateCustomPrice();
+	  
+	  window.location.href = "Thank_You.html";
     } else {
       alert("Error: "+data.message);
     }

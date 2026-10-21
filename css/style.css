@@ -1,14 +1,26 @@
+html{
+	display: flex;
+	flex-direction: column;
+	background-color: transparent;
+	height: 100vh;
+	width: 100vw;
+	overflow-x: hidden;
+
+}
 body{
 margin: 0;
 padding: 0;
 position: relative;
-min-height: 100vh;
+height: 98%;
 font-family: "Source Sans Pro",Arial, sans-serif; 
 color: white;
 background-color: #36454F;
+width: 98%;
+justify-content: center;
 }
 
-.hero {
+.hero {	
+width: 100%;
 position: relative;
 align-items: center;
 justify-content: center;
@@ -137,24 +149,6 @@ box-sizing: border-box;
 font-size: 12px;
 }
 
-a.nav-height {
-margin-top: 10px;
-margin-left: 10px;
-margin-right: 0;
-margin-bottom: 0;
-  padding: 0 !important;    /* Removes vertical padding, keeps safe side spacing */
-  height: fit-content;                  /* Hardlocks the anchor to the navbar limit */       /* Lets us align the inner logo instantly */
-  align-items: center;           /* Vertically centers the logo block in the 48px space */
-  box-sizing: border-box;
-}
-
-a.nav-height .logo {
-  height: 100%;                  /* Fills the 48px block exactly */
-  display: flex;
-  align-items: center;           /* Double-insures vertical alignment */
-height: fit-content; }
-
-
 /* Style navigation menu links */
 .topnav a {
   color: white;
@@ -237,6 +231,41 @@ cursor: pointer;
 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 transition: background-color 0.3s ease,
             transform 0.3s ease;
+}
+
+.getintouch-service{
+	position: absolute;
+bottom: 20px;
+left: 35px;
+z-index: 1000;
+	
+display: flex;
+justify-content: center;
+align-items: center;
+box-sizing: border-box;
+width: 140px;
+height: 30px;
+ 
+border-radius: 25px;
+border: 2px;
+font-family: 'Caveat', cursive;
+font-size: 12px;
+color: black;
+text-decoration: none;
+background-color: transparent;
+border-block-style: solid;
+border-block-color: red blue;
+border-block-width: 2px;
+
+
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease,
+            transform 0.3s ease;
+}
+
+.getintouch-service:hover {
+ background-color: transparent;
 }
 .getintouch:hover {
 background-color: transparent;
@@ -413,7 +442,7 @@ height: fit-content;
 .footer-contact p {
 margin-top: 0;
 margin-bottom: 4px;
-line-height: 0.1;
+line-height: 1.1;
 font-size: 10px;
 overflow-wrap: break-word;
 }
@@ -567,6 +596,7 @@ padding: 30px;
 background-color: transparent; 
 border-radius: 10px; 
 box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+justify-content: center;
 } 
 
 label {
@@ -893,7 +923,7 @@ max-width: 400px;
 
 .topnav a.icon {
 display: none;
-}
+ }
 
 .topnav #myLinks {
 display: block;
@@ -904,7 +934,7 @@ left: auto;
 width: auto;   
 box-shadow: none;
 height: 48px;
-}
+ }
 
 .topnav #myLinks a {
 display: inline-block;
@@ -912,8 +942,19 @@ width: auto;
 text-align: center;
 padding: 14px 16px;
 line-height: 22px;
-}
-
+ }
+ 
+.getintouch-service {
+opacity: 1 !important;
+visibility: visible !important;
+animation: none !important;
+ }
+  
+.getintouch {
+opacity: 1 !important;
+visibility: visible !important;
+animation: none !important;
+ }
 }
 
 
@@ -1039,6 +1080,14 @@ height: auto;
 min-height: 0;
 }
 
+.getintouch {
+animation: fadeOutButton 0.0s ease-out forwards;
+}
+
+.getintouch-service{
+animation: fadeOutButton 0.0s ease-out forwards;
+}
+
 .explore {
 position: relative;
 left: auto;
@@ -1049,12 +1098,6 @@ margin: 12px auto;
 text-align: center;
 }
 	
-.getintouch {
-display : none;
-opacity: 0;
-visibility: hidden;
-}
-
 .getintouch1,
 .getintouch2 {
 position: relative;
@@ -1128,7 +1171,6 @@ line-height: 1.6;
 text-align: center;
 }
 
-.getintouch,
 .explore {
 position: relative;
 left: auto;
@@ -1141,7 +1183,6 @@ margin: 12px auto;
 text-align: center;
 }
 
-.getintouch a,
 .explore a {
 display: flex;
 align-items: center;
@@ -1266,7 +1307,6 @@ font-size: 0.9rem;
 padding: 10px;
 }
 
-.getintouch,
 .explore {
 width: 95%;
 }
@@ -1276,4 +1316,15 @@ width: 95%;
 width: 96%;
 padding: 10px;
  }
+}
+
+@keyframes fadeOutButton {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
